@@ -3,8 +3,8 @@
 namespace Planck\Extension;
 
 
-use Planck\Application;
-use Planck\Extension;
+use Planck\Application\Application;
+use Planck\Application\Extension;
 
 class EntityEditor extends Extension
 {

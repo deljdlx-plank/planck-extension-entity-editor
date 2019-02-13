@@ -2,7 +2,7 @@
 
 namespace Planck\Extension\EntityEditor;
 
-use Planck\Application;
+use Planck\Application\Application;
 use Planck\Extension\Tool\ImageUploader;
 use Planck\Model\Entity;
 use Planck\Traits\IsApplicationObject;
