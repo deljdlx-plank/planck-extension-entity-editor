@@ -5,7 +5,7 @@ namespace Planck\Extension\EntityEditor;
 
 
 use Planck\Extension\ViewComponent\TreeFormater;
-use Planck\Router;
+use Planck\Routing\Router;
 
 abstract class EntityTreeApiRouter extends Router
 {

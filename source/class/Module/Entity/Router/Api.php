@@ -7,7 +7,7 @@ namespace Planck\Extension\EntityEditor\Module\Entity\Router;
 
 use Planck\Extension\EntityEditor\ImageEntityManager;
 use Planck\Extension\ViewComponent\DataLayer;
-use Planck\Router;
+use Planck\Routing\Router;
 
 class Api extends Router
 {
