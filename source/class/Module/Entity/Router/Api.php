@@ -30,11 +30,7 @@ class Api extends Router
                     echo json_encode(
                         $dataLayer->serializeValue($entity)
                     );
-                    /*
-                    echo json_encode(array(
-                        'entity' => $entity->toExtendedArray()
-                    ));
-                    */
+
                     return;
                 }
             }
@@ -50,6 +46,7 @@ class Api extends Router
             if(!empty($data['entity'])) {
                 $entityData = $data['entity'];
             }
+
 
 
             if(!empty($entityData['_fingerprint'])) {

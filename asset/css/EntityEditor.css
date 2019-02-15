@@ -1,0 +1,24 @@
+table.plk-entity-editor {
+    border: solid 1px #AAA;
+}
+
+table.plk-entity-editor thead {
+    background-color: #DDD;
+}
+
+
+tr.plk-field-container {
+    border-bottom: solid 1px #AAA;
+
+}
+
+tr.plk-field-container:last-child {
+    border: none;
+}
+
+
+
+tr.plk-field-container td, tr.plk-field-container th {
+    vertical-align: top;
+    padding: 8px;
+}
