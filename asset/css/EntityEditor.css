@@ -22,3 +22,15 @@ tr.plk-field-container td, tr.plk-field-container th {
     vertical-align: top;
     padding: 8px;
 }
+
+
+tr.plk-field-container td input, tr.plk-field-container td textarea {
+    padding: 4px 8px;
+}
+
+
+tr.plk-field-container th label.is-primary-key:before {
+    font-family: "Font Awesome 5 Free";
+    content: '\f084';
+    margin-right: 4px;
+}

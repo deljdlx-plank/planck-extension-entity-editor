@@ -75,6 +75,12 @@ class EntityEditor extends Component
 
                 $tr->th->label->html($fieldDescriptor->getCaption());
 
+
+            if($fieldDescriptor->isPrimaryKey()) {
+                $tr->th->label->addClass('is-primary-key');
+            }
+
+
                 $input = $this->getInputFromFieldDescriptor($fieldDescriptor);
 
                 $tr->td->html($input);

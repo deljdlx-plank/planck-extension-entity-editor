@@ -95,6 +95,27 @@ class Api extends Router
 
 
 
+        $this->get('get', '`/entity-editor/api/get`', function() {
+
+            $entityName = $this->get('entity');
+            if(class_exists($entityName)) {
+                $instance = $this->getApplication()->getModelEntity($entityName);
+                $id = $this->get('id');
+                if($id) {
+                    $instance->loadById($id);
+                    echo json_encode($instance->toArray());
+                }
+            }
+            else {
+                echo 'false';
+            }
+
+
+        })->json();
+
+
+
+        /*
 
         $this->post('set-image-property-crop', '`/entity-editor/api/set-image-property-crop`', function () {
             $data = $this->request->post();
@@ -153,7 +174,9 @@ class Api extends Router
 
 
         })->json();
+        */
 
     }
+
 }
 
