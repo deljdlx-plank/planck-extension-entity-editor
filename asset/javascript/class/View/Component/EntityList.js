@@ -11,7 +11,25 @@ Planck.Extension.EntityEditor.View.Component.EntityList = function(container)
 
    this.segmentSize = 2;
 
+   //this.loadEditor();
+
+    this.events = {
+        itemClick : function(entityDescriptor) {
+            console.log(entityDescriptor);
+        },
+        itemLoad: function() {
+
+        }
+    };
 };
+
+
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.on = function(event, callback)
+{
+    this.events[event] = callback;
+    return this;
+};
+
 
 
 Planck.Extension.EntityEditor.View.Component.EntityList.prototype.load = function(segmentIndex)
@@ -51,12 +69,28 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.load = functio
 
 Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord = function(entity)
 {
+
     var $tr = $('<tr></tr>');
+    $tr.attr('data-entity', JSON.stringify(entity));
+
 
     for(var attributeName in entity) {
         var value = entity[attributeName];
         $tr.append('<td>'+value+'</td>');
     }
+
+    $tr.click(function(event) {
+
+        var $element = $(event.target).parents('tr');
+        var entity = JSON.parse($element.attr('data-entity'));
+
+        var data = {
+            type: this.entityName,
+            entity: entity,
+        };
+
+        this.events.itemClick(data, $element, event);
+    }.bind(this));
 
     this.$list.append($tr);
 };

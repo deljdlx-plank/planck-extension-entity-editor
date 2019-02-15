@@ -26,6 +26,8 @@ Planck.Extension.EntityEditor.entityMapping = {
 
 Planck.Extension.EntityEditor.initialize = function()
 {
+    return;
+
     $('.plk-entity-list-container').each(function(index, element) {
         var component = new Planck.Extension.EntityEditor.View.Component.EntityList(element);
         component.load();

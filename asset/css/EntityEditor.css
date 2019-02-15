@@ -12,6 +12,11 @@ tr.plk-field-container {
 
 }
 
+.plk-field-container input {
+    width: 100%;
+}
+
+
 tr.plk-field-container:last-child {
     border: none;
 }
@@ -58,4 +63,5 @@ tr.plk-field-container th label.is-primary-key:before {
 .plk-pagination span.selected {
     font-weight: bold;
     background-color:#FFD;
+    box-shadow: 1px 1px 1px rgba(0,0,0, 0.7);
 }

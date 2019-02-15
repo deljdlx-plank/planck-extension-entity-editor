@@ -23,12 +23,30 @@ class EntityEditor extends Component
      */
     private $entity;
 
-    public function __construct($entity)
+    public function __construct($entity = null)
     {
         parent::__construct('div');
 
-        $this->entity = $entity;
+        if($entity) {
+            $this->entity = $entity;
+        }
     }
+
+    public function loadEntityByFingerPrint($fingerPrint)
+    {
+        $this->entity = $this->getApplication()->getModelInstanceByFingerPrint($fingerPrint);
+        return $this;
+    }
+
+
+    public function loadEntityByAttributes($entityType, $attributes)
+    {
+
+        $this->entity = $this->getApplication()->getModelEntity($entityType);
+        $this->entity->loadBy($attributes);
+        return $this;
+    }
+
 
 
     public function build()

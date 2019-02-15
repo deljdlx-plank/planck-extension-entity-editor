@@ -41,16 +41,19 @@ class EntityManager extends Controller
     public function execute()
     {
 
+        $this->view->addClass('plk-entity-manager-container');
 
         $this->view->row->split(4,8);
         $this->view->css('margin', '16px');
 
 
+        $this->view->row->getCol(1)->addClass('plk-entity-list-container');
         $this->view->row->getCol(0)->html(
             $this->entityList->getDom()
         );
 
 
+        $this->view->row->getCol(1)->addClass('plk-entity-editor-container');
         $this->view->row->getCol(1)->append(
            $this->entityEditor->getDom()
         );
