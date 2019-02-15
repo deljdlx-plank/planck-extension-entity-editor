@@ -26,6 +26,12 @@ Planck.Extension.EntityEditor.entityMapping = {
 
 Planck.Extension.EntityEditor.initialize = function()
 {
+    $('.plk-entity-list-container').each(function(index, element) {
+        var component = new Planck.Extension.EntityEditor.View.Component.EntityList(element);
+        component.load();
+    });
+
+
    $('.plk-entity-chooser').each(function(index, element) {
 
 
@@ -34,11 +40,7 @@ Planck.Extension.EntityEditor.initialize = function()
 
 
        if(isset(Planck.Extension.EntityEditor.entityMapping[entityName])) {
-
-           console.log('custom manager')
-
             var component = new Planck.Extension.EntityEditor.entityMapping[entityName](element);
-
        }
        else {
            var component = new Planck.Extension.EntityEditor.View.Component.EntityChooser(element);

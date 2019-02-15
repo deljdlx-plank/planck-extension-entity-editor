@@ -28,10 +28,8 @@ class EntityEditor extends Component
         parent::__construct('div');
 
         $this->entity = $entity;
-
-
-
     }
+
 
     public function build()
     {

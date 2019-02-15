@@ -95,6 +95,81 @@ class Api extends Router
 
 
 
+        $this->get('list', '`/entity-editor/api/list`', function() {
+
+            $entityName = $this->get('entity');
+            if(class_exists($entityName)) {
+
+
+                $instance = $this->getApplication()->getModelEntity($entityName);
+                $repository = $instance->getRepository();
+
+                $descriptor = $repository->getDescriptor(true);
+
+                $selectedFields = [];
+
+
+                $idFieldName = $descriptor->getIdFieldName();
+                if($idFieldName) {
+                    $selectedFields[] = $idFieldName;
+                }
+
+
+                $labelFieldName = $descriptor->getLabelFieldName();
+                if($labelFieldName) {
+                    $selectedFields[] = $labelFieldName;
+                }
+
+
+                $offset = null;
+                if((int) $this->get('offset')) {
+                    $offset = $this->get('offset');
+                }
+
+                $limit = null;
+                if((int) $this->get('limit')) {
+                    $limit = $this->get('limit');
+                }
+
+                $totalRows = 0;
+                $entities = $repository->getList($selectedFields, $offset, $limit, $totalRows);
+                
+                $values  = [];
+                foreach ($entities as $entity) {
+                    $values[]= $entity->getValues($selectedFields);
+                }
+
+
+                $segmentCount = 1;
+                $currentSegment = 0;
+                if($limit) {
+                    $segmentCount = ceil($totalRows/$limit);
+                    $currentSegment = floor($offset/$limit);
+                }
+
+
+                echo json_encode(array(
+                    'metadata' => array(
+                        'fields' => $selectedFields,
+                        'count' => $totalRows,
+                        'segment' => array(
+                            'offset' => $offset,
+                            'limit' => $limit,
+                            'count' => $segmentCount,
+                            'currentIndex' => $currentSegment,
+                        )
+                    ),
+                    'entities' => $values
+                ));
+
+            }
+            else {
+                echo 'false';
+            }
+        })->json();
+
+
+
         $this->get('get', '`/entity-editor/api/get`', function() {
 
             $entityName = $this->get('entity');
@@ -109,8 +184,6 @@ class Api extends Router
             else {
                 echo 'false';
             }
-
-
         })->json();
 
 
