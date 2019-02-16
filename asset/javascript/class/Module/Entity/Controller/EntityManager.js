@@ -3,6 +3,8 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager = function(
 
     this.$container = $(container);
     this.$entityEditorContainer = this.$container.find('.plk-entity-editor-container');
+
+
     this.$entityListContainer = this.$container.find('.plk-entity-list-container');
 
     this.entityList;
@@ -69,6 +71,8 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.l
 
 Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.renderEntityEditor = function(content)
 {
+
+
     this.$entityEditorContainer.html(content);
 
 

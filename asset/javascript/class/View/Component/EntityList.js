@@ -4,14 +4,24 @@ Planck.Extension.EntityEditor.View.Component.EntityList = function(container)
    this.$list = this.$container.find('.plk-entity-list');
    this.$pagination = this.$container.find('.plk-pagination');
 
-   this.entityName = this.$container.attr('data-entity-type');
+   this.entityType = this.$container.attr('data-entity-type');
+   this.entityLabel = this.$container.attr('data-entity-label');
 
 
    this.currentSegmentIndex = 0;
 
    this.segmentSize = 2;
 
-   //this.loadEditor();
+
+
+   this.decorateContainer();
+
+
+   this.services = {
+      getEntities : {
+          url: '?/@extension/planck-extension-entity_editor/entity/api[list]'
+      }
+   };
 
     this.events = {
         itemClick : function(entityDescriptor) {
@@ -21,6 +31,25 @@ Planck.Extension.EntityEditor.View.Component.EntityList = function(container)
 
         }
     };
+
+    this.toolbar = null;
+};
+
+
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.decorateContainer = function()
+{
+
+    this.toolbar = new Planck.Extension.EntityEditor.View.Component.EntityListToolbar();
+    this.toolbar.setTitle(this.entityLabel);
+
+    var $header = $('<div class="plk-header"></div>');
+    $header.append(this.toolbar.getElement());
+
+    this.$header = $header;
+
+    this.$container.prepend(
+        $header
+    );
 };
 
 
@@ -39,10 +68,10 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.load = functio
         segmentIndex = 0;
     }
 
-      var url = '?/@extension/planck-extension-entity_editor/entity/api[list]';
+      var url = this.services.getEntities.url;
 
       var data = {
-          entity: this.entityName,
+          entity: this.entityType,
           limit: this.segmentSize,
           offset: (segmentIndex*this.segmentSize)
       };
@@ -85,7 +114,7 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord =
         var entity = JSON.parse($element.attr('data-entity'));
 
         var data = {
-            type: this.entityName,
+            type: this.entityType,
             entity: entity,
         };
 
@@ -101,7 +130,7 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderPaginati
 
 
     if(this.currentSegmentIndex>0) {
-        this.$pagination.append('<a class=""><i class="fas fa-angle-left"></i></a>')
+        this.$pagination.append('<a class="" data-behaviour="interactive"><i class="fas fa-angle-left"></i></a>')
     }
 
 
@@ -109,11 +138,11 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderPaginati
         var pageNumber = pageIndex + 1;
 
         if(pageIndex == segmentDescriptor.currentIndex) {
-            this.$pagination.append('<span class="selected">'+pageNumber+'</i></span>')
+            this.$pagination.append('<span class="selected" data-behaviour="interactive">'+pageNumber+'</i></span>')
 
         }
         else {
-            var $paginationItem = $('<a data-segment-index="'+pageIndex+'">'+pageNumber+'</i></a>');
+            var $paginationItem = $('<a data-segment-index="'+pageIndex+'" data-behaviour="interactive">'+pageNumber+'</i></a>');
 
             $paginationItem.click(function(event) {
                var segmentIndex = $(event.target).attr('data-segment-index');
@@ -127,7 +156,7 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderPaginati
     }
 
     if(this.currentSegmentIndex<segmentDescriptor.count-1) {
-        this.$pagination.append('<a class=""><i class="fas fa-angle-right"></i></a>')
+        this.$pagination.append('<a class="" data-behaviour="interactive"><i class="fas fa-angle-right"></i></a>')
     }
 
 

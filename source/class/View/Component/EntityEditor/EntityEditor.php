@@ -51,8 +51,10 @@ class EntityEditor extends Component
 
     public function build()
     {
+
         parent::build();
 
+        $this->dom->addClass('plk-entity-editor-container');
 
         $form = new Form();
         $form->setMethod('post');
@@ -69,6 +71,7 @@ class EntityEditor extends Component
 
         $table = new Table();
         $table->addClass('plk-entity-editor');
+        $table->addClass('plk-box');
         $table->setHeaders(array(
             'Propriété',
             'Valeur'
@@ -153,6 +156,7 @@ class EntityEditor extends Component
         $input->setValue($value);
         $input->setName('entity['.$propertyName.']');
         $input->setAttribute('data-real-type', $descriptor->getType());
+        $input->setAttribute('data-behaviour', 'interactive');
 
 
 
@@ -166,6 +170,7 @@ class EntityEditor extends Component
         $value = $this->entity->getValue($propertyName);
 
         $input = new Button();
+        $input->setAttribute('data-behaviour', 'interactive');
         $input->setLabel('Selection ['.$value.']');
         $input->setValue($value);
         $input->setName('entity['.$propertyName.']');

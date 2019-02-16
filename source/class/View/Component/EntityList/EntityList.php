@@ -27,8 +27,10 @@ class EntityList extends Component
         parent::build();
 
         $this->dom = new Div();
-        $this->dom->addClass('plk-entity-list-container');
+        $this->dom->addClass('plk-entity-list-container plk-box');
+
         $this->dom->setAttribute('data-entity-type', get_class($this->repository->getEntityInstance()));
+        $this->dom->setAttribute('data-entity-label', $this->repository->getDescriptor(true)->getEntityLabel());
 
 
         $table = new Table();
