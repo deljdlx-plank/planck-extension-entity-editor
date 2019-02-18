@@ -8,6 +8,13 @@
 }
 
 
+.plk-entity-list .plk-highlighted {
+    font-weight: bold;
+    color: var(--color-heavy-highlighted);
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+}
+
 
 
 

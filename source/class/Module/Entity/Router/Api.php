@@ -13,9 +13,16 @@ class Api extends Router
 {
 
 
+    public function formatEntitiesSegment($repository, $entities)
+    {
+
+    }
+
+
 
     public function registerRoutes()
     {
+        $self = $this;
 
 
         $this->delete('delete', '`/entity-editor/api/save`', function () {
@@ -95,29 +102,25 @@ class Api extends Router
 
 
 
-        $this->get('list', '`/entity-editor/api/list`', function() {
 
-            $entityName = $this->get('entity');
-            if(class_exists($entityName)) {
+        $this->get('search', '`/entity-editor/api/search`', function($entityType = null, $search = null) {
 
-
-                $instance = $this->getApplication()->getModelEntity($entityName);
-                $repository = $instance->getRepository();
-
-                $descriptor = $repository->getDescriptor(true);
-
-                $selectedFields = [];
+            if($entityType === null) {
+                $entityType = $this->get('entityType');
+            }
 
 
-                $idFieldName = $descriptor->getIdFieldName();
-                if($idFieldName) {
-                    $selectedFields[] = $idFieldName;
-                }
+            if(!class_exists($entityType)) {
+                echo 'false';
+                return;
+            }
 
+            $entity = $this->getApplication()->getModelEntity($entityType);
+            $repository = $entity->getRepository();
 
-                $labelFieldName = $descriptor->getLabelFieldName();
-                if($labelFieldName) {
-                    $selectedFields[] = $labelFieldName;
+            if(method_exists($repository, 'search')) {
+                if($search === null) {
+                    $search = $this->get('search');
                 }
 
 
@@ -131,24 +134,40 @@ class Api extends Router
                     $limit = $this->get('limit');
                 }
 
+
                 $totalRows = 0;
-                $entities = $repository->getList($selectedFields, $offset, $limit, $totalRows);
-                
+                $entities = $repository->search($search, $offset, $limit, $totalRows);
+
+
+                //=======================================================
+
+                $descriptor = $repository->getDescriptor(true);
+                $selectedFields = [];
+
+                $idFieldName = $descriptor->getIdFieldName();
+                if($idFieldName) {
+                    $selectedFields[] = $idFieldName;
+                }
+                $labelFieldName = $descriptor->getLabelFieldName();
+                if($labelFieldName) {
+                    $selectedFields[] = $labelFieldName;
+                }
+
                 $values  = [];
                 foreach ($entities as $entity) {
                     $values[]= $entity->getValues($selectedFields);
                 }
 
-
-                $segmentCount = 1;
+                $segmentCount = 0;
                 $currentSegment = 0;
                 if($limit) {
                     $segmentCount = ceil($totalRows/$limit);
                     $currentSegment = floor($offset/$limit);
                 }
 
+                //=======================================================
 
-                echo json_encode(array(
+                $response = array(
                     'metadata' => array(
                         'fields' => $selectedFields,
                         'count' => $totalRows,
@@ -160,12 +179,31 @@ class Api extends Router
                         )
                     ),
                     'entities' => $values
-                ));
+                );
 
+
+                echo json_encode($response);
+
+                return;
             }
-            else {
-                echo 'false';
-            }
+
+            echo 'false';
+            return;
+
+
+
+        })->json();
+
+        $this->get('list', '`/entity-editor/api/list`', function() use($self) {
+
+            $route = $self->executeRoute('search');
+
+
+            echo $route->getOutput();
+
+            return $route->getStatus();
+
+
         })->json();
 
 

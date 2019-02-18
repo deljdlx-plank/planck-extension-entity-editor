@@ -1,46 +1,60 @@
-Planck.Extension.EntityEditor.View.Component.EntityList = function(container)
-{
-   this.$container = $(container);
-   this.$list = this.$container.find('.plk-entity-list');
-   this.$pagination = this.$container.find('.plk-pagination');
+Planck.Extension.EntityEditor.View.Component.EntityList = function (container) {
+    this.$container = $(container);
+    this.$list = this.$container.find('.plk-entity-list');
+    this.$pagination = this.$container.find('.plk-pagination');
 
-   this.entityType = this.$container.attr('data-entity-type');
-   this.entityLabel = this.$container.attr('data-entity-label');
-
-
-   this.currentSegmentIndex = 0;
-
-   this.segmentSize = 2;
+    this.entityType = this.$container.attr('data-entity-type');
+    this.entityLabel = this.$container.attr('data-entity-label');
 
 
+    this.currentSegmentIndex = 0;
 
-   this.decorateContainer();
+    this.segmentSize = 2;
 
 
-   this.services = {
-      getEntities : {
-          url: '?/@extension/planck-extension-entity_editor/entity/api[list]'
-      }
-   };
+    this.toolbar = null;
+    this.decorateContainer();
+
+
+    this.services = {
+        getEntities: {
+            url: '?/@extension/planck-extension-entity_editor/entity/api[search]'
+        }
+    };
 
     this.events = {
-        itemClick : function(entityDescriptor) {
+        itemClick: function (entityDescriptor) {
             console.log(entityDescriptor);
         },
-        itemLoad: function() {
+        itemLoad: function () {
 
         }
     };
 
-    this.toolbar = null;
+    this.search = '';
+
+
 };
 
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.getEntityType = function () {
+    return this.entityType;
+};
 
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.decorateContainer = function()
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.decorateContainer = function ()
 {
 
-    this.toolbar = new Planck.Extension.EntityEditor.View.Component.EntityListToolbar();
+    this.toolbar = new Planck.Extension.EntityEditor.View.Component.EntityListToolbar(this);
+
     this.toolbar.setTitle(this.entityLabel);
+
+    this.toolbar.on('search', function (result) {
+
+        console.log(this.toolbar);
+
+        this.search = this.toolbar.getSearch();
+        this.renderResultSet(result);
+    }.bind(this));
+
 
     var $header = $('<div class="plk-header"></div>');
     $header.append(this.toolbar.getElement());
@@ -53,62 +67,83 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.decorateContai
 };
 
 
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.on = function(event, callback)
-{
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.on = function (event, callback) {
     this.events[event] = callback;
     return this;
 };
 
 
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.load = function (segmentIndex) {
 
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.load = function(segmentIndex)
-{
-
-    if(!isset(segmentIndex)) {
+    if (!isset(segmentIndex)) {
         segmentIndex = 0;
     }
 
-      var url = this.services.getEntities.url;
+    var url = this.services.getEntities.url;
 
-      var data = {
-          entity: this.entityType,
-          limit: this.segmentSize,
-          offset: (segmentIndex*this.segmentSize)
-      };
-      Planck.ajax({
-          url: url,
-          method: 'get',
-          data: data,
-          success: function(descriptor) {
+    var data = {
+        entityType: this.entityType,
+        search: this.search,
+        limit: this.segmentSize,
+        offset: (segmentIndex * this.segmentSize)
+    };
+    Planck.ajax({
+        url: url,
+        method: 'get',
+        data: data,
+        success: function (result) {
 
-              this.clearList();
-                $(descriptor.entities).each(function(index, entity) {
-                    this.renderRecord(entity);
-                }.bind(this));
+            this.renderResultSet(result);
+
+        }.bind(this)
+    });
+};
+
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderResultSet = function (result) {
+    this.clearList();
+    $(result.entities).each(function (index, entity) {
+        this.renderRecord(entity);
+    }.bind(this));
 
 
-              this.currentSegmentIndex = descriptor.metadata.segment.currentIndex;
+    this.currentSegmentIndex = result.metadata.segment.currentIndex;
 
-                this.renderPagination(descriptor.metadata.segment);
+    console.log(result.metadata.segment)
 
-          }.bind(this)
-      });
+    this.renderPagination(result.metadata.segment);
+
+};
+
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.searchAndHighlight = function(value, search)
+{
+    var regexp = new RegExp('('+search+')','gi');
+    return value.replace(regexp, this.highlight('$1'));
+};
+
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.highlight = function(string)
+{
+    return '<span class="plk-highlighted">'+string+'</span>';
 };
 
 
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord = function(entity)
-{
+
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord = function (entity) {
 
     var $tr = $('<tr></tr>');
     $tr.attr('data-entity', JSON.stringify(entity));
 
 
-    for(var attributeName in entity) {
+    for (var attributeName in entity) {
         var value = entity[attributeName];
-        $tr.append('<td>'+value+'</td>');
+
+        if(this.search) {
+            var value = this.searchAndHighlight(value, this.search);
+        }
+
+        $tr.append('<td>' + value + '</td>');
     }
 
-    $tr.click(function(event) {
+    $tr.click(function (event) {
 
         var $element = $(event.target).parents('tr');
         var entity = JSON.parse($element.attr('data-entity'));
@@ -124,29 +159,28 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord =
     this.$list.append($tr);
 };
 
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderPagination = function(segmentDescriptor)
-{
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderPagination = function (segmentDescriptor) {
     this.$pagination.html('');
 
 
-    if(this.currentSegmentIndex>0) {
+    if (this.currentSegmentIndex > 0) {
         this.$pagination.append('<a class="" data-behaviour="interactive"><i class="fas fa-angle-left"></i></a>')
     }
 
 
-    for(var pageIndex = 0 ; pageIndex<segmentDescriptor.count; pageIndex++) {
+    for (var pageIndex = 0; pageIndex < segmentDescriptor.count; pageIndex++) {
         var pageNumber = pageIndex + 1;
 
-        if(pageIndex == segmentDescriptor.currentIndex) {
-            this.$pagination.append('<span class="selected" data-behaviour="interactive">'+pageNumber+'</i></span>')
+        if (pageIndex == segmentDescriptor.currentIndex) {
+            this.$pagination.append('<span class="selected" data-behaviour="interactive">' + pageNumber + '</i></span>')
 
         }
         else {
-            var $paginationItem = $('<a data-segment-index="'+pageIndex+'" data-behaviour="interactive">'+pageNumber+'</i></a>');
+            var $paginationItem = $('<a data-segment-index="' + pageIndex + '" data-behaviour="interactive">' + pageNumber + '</i></a>');
 
-            $paginationItem.click(function(event) {
-               var segmentIndex = $(event.target).attr('data-segment-index');
-               this.load(segmentIndex);
+            $paginationItem.click(function (event) {
+                var segmentIndex = $(event.target).attr('data-segment-index');
+                this.load(segmentIndex);
             }.bind(this));
 
             this.$pagination.append($paginationItem)
@@ -155,15 +189,13 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderPaginati
 
     }
 
-    if(this.currentSegmentIndex<segmentDescriptor.count-1) {
+    if (this.currentSegmentIndex < segmentDescriptor.count - 1) {
         this.$pagination.append('<a class="" data-behaviour="interactive"><i class="fas fa-angle-right"></i></a>')
     }
 
 
-
 };
 
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.clearList = function()
-{
-   this.$list.find('tbody').html('');
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.clearList = function () {
+    this.$list.find('tbody').html('');
 };

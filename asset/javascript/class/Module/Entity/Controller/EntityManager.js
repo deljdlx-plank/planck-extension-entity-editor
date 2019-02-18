@@ -12,19 +12,19 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager = function(
 };
 
 
+
+
 Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.initialize = function()
 {
 
     this.entityList = new Planck.Extension.EntityEditor.View.Component.EntityList(this.$entityListContainer);
     this.entityList.on('itemClick', function(entityDescriptor) {
-
         this.loadEditorByEntityDescriptor(entityDescriptor);
 
     }.bind(this));
 
 
     this.entityList.load();
-
     this.renderEntityEditor();
 
 };
@@ -42,27 +42,12 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.l
     );
 
     componentLoader.load(function(componentLoaderDescriptor) {
-
         this.renderEntityEditor(
             componentLoaderDescriptor.getHTML()
         );
-        /*
-        $('.plk-entity-editor-container').html(
-
-        );
-        */
-
-
     }.bind(this));
 };
 
-
-Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.loadEditor = function(entityType, id)
-{
-
-
-    return;
-};
 
 
 

@@ -13,11 +13,24 @@ class EntityList extends Component
 
     private $repository;
 
-    public function __construct(Repository $repository)
+    public function __construct(Repository $repository = null)
     {
         parent::__construct('div');
-        $this->repository = $repository;
+        if($repository) {
+            $this->repository = $repository;
+        }
+    }
 
+    public function loadRepositoryByName($repositoryName)
+    {
+        $this->repository = $this->getApplication()->getModelRepository($repositoryName);
+        return $this;
+    }
+
+    public function loadRepositoryByEntityName($entityName)
+    {
+        $this->repository = $this->getApplication()->getModelEntity($entityName)->getRepository();
+        return $this;
     }
 
 
