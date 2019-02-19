@@ -32,16 +32,18 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.i
 Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.loadEditorByEntityDescriptor = function(descriptor)
 {
 
+
     var componentLoader = new Planck.Extension.ViewComponent.RemoteComponentLoader('Planck\\Extension\\EntityEditor\\View\\Component\\EntityEditor');
     componentLoader.addMethodCall(
         'loadEntityByAttributes',
         [
             descriptor.type,
-            descriptor.entity
+            descriptor.entity.getValues()
         ]
     );
 
     componentLoader.load(function(componentLoaderDescriptor) {
+
         this.renderEntityEditor(
             componentLoaderDescriptor.getHTML()
         );
@@ -62,6 +64,8 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.r
 
 
     this.$entityEditorContainer.find('.plk-entity-chooser').each(function(index, element) {
+
+
 
         var entityName = $(element).attr('data-entity-type');
 

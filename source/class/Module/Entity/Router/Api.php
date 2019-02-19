@@ -7,6 +7,7 @@ namespace Planck\Extension\EntityEditor\Module\Entity\Router;
 
 use Planck\Extension\EntityEditor\ImageEntityManager;
 use Planck\Extension\ViewComponent\DataLayer;
+use Planck\Model\Segment;
 use Planck\Routing\Router;
 
 class Api extends Router
@@ -135,56 +136,16 @@ class Api extends Router
                 }
 
 
-                $totalRows = 0;
-                $entities = $repository->search($search, $offset, $limit, $totalRows);
+                $selectedFields = null;
+                $segment = null;
+
+                $repository->search($search, $selectedFields, $offset, $limit, $segment);
 
 
-                //=======================================================
 
-                $descriptor = $repository->getDescriptor(true);
-                $selectedFields = [];
-
-                $idFieldName = $descriptor->getIdFieldName();
-                if($idFieldName) {
-                    $selectedFields[] = $idFieldName;
-                }
-                $labelFieldName = $descriptor->getLabelFieldName();
-                if($labelFieldName) {
-                    $selectedFields[] = $labelFieldName;
-                }
-
-                $values  = [];
-                foreach ($entities as $entity) {
-                    $values[]= $entity->getValues($selectedFields);
-                }
-
-                $segmentCount = 0;
-                $currentSegment = 0;
-                if($limit) {
-                    $segmentCount = ceil($totalRows/$limit);
-                    $currentSegment = floor($offset/$limit);
-                }
-
-                //=======================================================
-
-                $response = array(
-                    'metadata' => array(
-                        'fields' => $selectedFields,
-                        'count' => $totalRows,
-                        'segment' => array(
-                            'offset' => $offset,
-                            'limit' => $limit,
-                            'count' => $segmentCount,
-                            'currentIndex' => $currentSegment,
-                        )
-                    ),
-                    'entities' => $values
-                );
-
-
-                echo json_encode($response);
-
+                echo json_encode($segment);
                 return;
+
             }
 
             echo 'false';

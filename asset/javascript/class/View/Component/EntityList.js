@@ -100,41 +100,42 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.load = functio
 };
 
 Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderResultSet = function (result) {
+
+    var segment = new Planck.Model.Segment(result);
+
     this.clearList();
-    $(result.entities).each(function (index, entity) {
+
+
+
+    $(segment.getEntities()).each(function (index, entity) {
         this.renderRecord(entity);
     }.bind(this));
 
-
     this.currentSegmentIndex = result.metadata.segment.currentIndex;
 
-    console.log(result.metadata.segment)
+    //console.log(result.metadata.segment)
 
     this.renderPagination(result.metadata.segment);
 
 };
 
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.searchAndHighlight = function(value, search)
-{
-    var regexp = new RegExp('('+search+')','gi');
-    return value.replace(regexp, this.highlight('$1'));
-};
 
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.highlight = function(string)
-{
-    return '<span class="plk-highlighted">'+string+'</span>';
-};
+/**
+ *
+ * @param {Planck.Model.Entity} entity
+ */
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord = function (entityInstance) {
 
-
-
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord = function (entity) {
 
     var $tr = $('<tr></tr>');
-    $tr.attr('data-entity', JSON.stringify(entity));
+    $tr.data('entity', entityInstance);
 
 
-    for (var attributeName in entity) {
-        var value = entity[attributeName];
+    $tr.attr('data-entity', entityInstance.toJSON());
+
+
+    for (var attributeName in entityInstance.getValues()) {
+        var value = entityInstance.getValue(attributeName);
 
         if(this.search) {
             var value = this.searchAndHighlight(value, this.search);
@@ -143,10 +144,14 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord =
         $tr.append('<td>' + value + '</td>');
     }
 
+    //==================================================
     $tr.click(function (event) {
 
         var $element = $(event.target).parents('tr');
-        var entity = JSON.parse($element.attr('data-entity'));
+
+
+        var entity = $(event.target).parents('tr').data('entity');
+
 
         var data = {
             type: this.entityType,
@@ -155,9 +160,13 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord =
 
         this.events.itemClick(data, $element, event);
     }.bind(this));
+    !//==================================================
 
-    this.$list.append($tr);
+        this.$list.append($tr);
 };
+
+
+
 
 Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderPagination = function (segmentDescriptor) {
     this.$pagination.html('');
@@ -195,6 +204,19 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderPaginati
 
 
 };
+
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.searchAndHighlight = function(value, search)
+{
+    var regexp = new RegExp('('+search+')','gi');
+    return value.replace(regexp, this.highlight('$1'));
+};
+
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.highlight = function(string)
+{
+    return '<span class="plk-highlighted">'+string+'</span>';
+};
+
+
 
 Planck.Extension.EntityEditor.View.Component.EntityList.prototype.clearList = function () {
     this.$list.find('tbody').html('');

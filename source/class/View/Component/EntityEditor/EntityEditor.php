@@ -92,7 +92,7 @@ class EntityEditor extends Component
 
             $tr->addClass('plk-field-container');
 
-                $tr->th->label->html($fieldDescriptor->getCaption());
+                $tr->th->label->html($fieldDescriptor->getLabel());
 
 
             if($fieldDescriptor->isPrimaryKey()) {

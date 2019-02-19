@@ -24,6 +24,7 @@ Planck.Extension.EntityEditor.entityMapping = {
 };
 
 
+
 Planck.Extension.EntityEditor.initialize = function()
 {
     return;
