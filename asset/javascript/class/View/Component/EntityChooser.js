@@ -1,6 +1,9 @@
 Planck.Extension.EntityEditor.View.Component.EntityChooser = function(triggerElement)
 {
 
+    this.model = new Planck.Model();
+
+
     this.$triggerElement = $(triggerElement);
 
     this.$triggerElement.click(function() {
@@ -8,14 +11,53 @@ Planck.Extension.EntityEditor.View.Component.EntityChooser = function(triggerEle
     }.bind(this));
 
 
-    this.$inputValue = $('<input name="'+this.$triggerElement.attr('name')+'" value="'+this.$triggerElement.val()+'" type="hiddeen"/>');
+    this.$inputValue = $('<input name="'+this.$triggerElement.attr('name')+'" value="'+this.$triggerElement.val()+'" type="hidden"/>');
     this.$triggerElement.parent().append(this.$inputValue);
 
+    this.$labelElement = $('<input readonly="readonly"/>');
+    this.$triggerElement.parent().append(this.$labelElement);
 
 
     this.entityType = this.$triggerElement.attr('data-entity-type');
 
+    this.loadPreview(this.$inputValue.val());
+
 };
+
+
+Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.loadPreview = function(value)
+{
+    if(!value) {
+        return false;
+    }
+
+
+    var url = '?/@extension/planck-extension-entity_editor/entity/api[get]';
+    var data = {
+        entity: this.entityType,
+        id: value
+    };
+    Planck.ajax({
+        url: url,
+        method: 'get',
+        data: data,
+        success: function(response) {
+
+            var entity = this.model.getEntityByDescriptor(response);
+
+            this.$labelElement.val(
+               entity.getLabel()
+            );
+
+        }.bind(this)
+    });
+
+
+
+
+};
+
+
 
 Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.showEntitySelector = function()
 {
@@ -28,7 +70,6 @@ Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.showEntityS
 
     componentLoader.addMethodCall('loadRepositoryByEntityName', [
         this.entityType
-        //'Planck\\Extension\\Content\\Model\\Repository\\Article'
     ]);
 
     componentLoader.load(function(descriptor) {
@@ -42,7 +83,10 @@ Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.showEntityS
 
         list.on('itemClick', function(descriptor) {
 
-            this.$inputValue.val(descriptor.entity.id);
+
+            this.$inputValue.val(descriptor.entity.getId());
+            this.$labelElement.val(descriptor.entity.getLabel());
+
 
         }.bind(this));
         list.load();

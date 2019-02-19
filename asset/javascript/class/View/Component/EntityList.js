@@ -122,7 +122,7 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderResultSe
 
 /**
  *
- * @param {Planck.Model.Entity} entity
+ * @param {Planck.Model.Entity} entityInstance
  */
 Planck.Extension.EntityEditor.View.Component.EntityList.prototype.renderRecord = function (entityInstance) {
 

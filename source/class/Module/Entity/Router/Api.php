@@ -177,7 +177,7 @@ class Api extends Router
                 $id = $this->get('id');
                 if($id) {
                     $instance->loadById($id);
-                    echo json_encode($instance->toArray());
+                    echo json_encode($instance->toExtendedArray());
                 }
             }
             else {
