@@ -96,6 +96,8 @@ abstract class EntityTreeApiRouter extends Router
         })->json()
         ;
 
+
+
         $this->get('initialize', '`'.$this->getRoutePath().'/initialize`', function () use($self) {
 
 
