@@ -73,7 +73,7 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.on = function 
 };
 
 
-Planck.Extension.EntityEditor.View.Component.EntityList.prototype.load = function (segmentIndex) {
+Planck.Extension.EntityEditor.View.Component.EntityList.prototype.load = function (segmentIndex, callback) {
 
     if (!isset(segmentIndex)) {
         segmentIndex = 0;
@@ -94,6 +94,9 @@ Planck.Extension.EntityEditor.View.Component.EntityList.prototype.load = functio
         success: function (result) {
 
             this.renderResultSet(result);
+            if(callback) {
+                callback(result);
+            }
 
         }.bind(this)
     });

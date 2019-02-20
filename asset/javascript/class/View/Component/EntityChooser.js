@@ -5,22 +5,35 @@ Planck.Extension.EntityEditor.View.Component.EntityChooser = function(triggerEle
 
 
     this.$triggerElement = $(triggerElement);
+    this.$triggerElement.hide();
 
-    this.$triggerElement.click(function() {
-        this.showEntitySelector();
-    }.bind(this));
+    this.$label = this.getLabel();
+    this.$label.html(i18n('<div class="button" data-behaviour="interactive"><span>'+this.$label.html()+'</span></div>'));
 
 
     this.$inputValue = $('<input name="'+this.$triggerElement.attr('name')+'" value="'+this.$triggerElement.val()+'" type="hidden"/>');
     this.$triggerElement.parent().append(this.$inputValue);
 
-    this.$labelElement = $('<input readonly="readonly"/>');
+    this.$labelElement = $('<input readonly="readonly" data-behaviour="interactive"/>');
     this.$triggerElement.parent().append(this.$labelElement);
 
 
     this.entityType = this.$triggerElement.attr('data-entity-type');
 
+
+
+    this.$label.click(function() {
+        this.showEntitySelector();
+    }.bind(this));
+
+    this.$labelElement.click(function() {
+        this.showEntitySelector();
+    }.bind(this));
+
+
     this.loadPreview(this.$inputValue.val());
+
+
 
 };
 
@@ -59,6 +72,20 @@ Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.loadPreview
 
 
 
+Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.getFloatingBox = function(descriptor)
+{
+
+    var $element = $(descriptor.getHTML());
+
+    var floatingBox = new Planck.Extension.ViewComponent.View.Component.FloatingBox(
+        this.$label,
+        $element
+    );
+    return floatingBox;
+
+};
+
+
 Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.showEntitySelector = function()
 {
 
@@ -73,23 +100,23 @@ Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.showEntityS
     ]);
 
     componentLoader.load(function(descriptor) {
-        var overlay = new Planck.Extension.ViewComponent.View.Component.Overlay();
-        overlay.render(document.body);
-        overlay.show(descriptor.getHTML());
+
+        var $floatingBox  = this.getFloatingBox(descriptor);
+        $floatingBox.show();
+
+
 
         var list = new Planck.Extension.EntityEditor.View.Component.EntityList(
-            overlay.getElement().find('.plk-entity-list-container')
+            $floatingBox.getElement()
         );
 
         list.on('itemClick', function(descriptor) {
-
-
             this.$inputValue.val(descriptor.entity.getId());
             this.$labelElement.val(descriptor.entity.getLabel());
-
-
+            $floatingBox.destroy();
         }.bind(this));
-        list.load();
+        list.load(0, function() {
+        }.bind(this));
 
     }.bind(this));
 

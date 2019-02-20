@@ -92,12 +92,14 @@ class EntityEditor extends Component
 
             $tr->addClass('plk-field-container');
 
-                $tr->th->label->html($fieldDescriptor->getLabel());
+                $tr->th->label->html(
+                    $this->getLabelFromFieldDescriptor($fieldDescriptor)
+                );
 
 
-            if($fieldDescriptor->isPrimaryKey()) {
-                $tr->th->label->addClass('is-primary-key');
-            }
+                if($fieldDescriptor->isPrimaryKey()) {
+                    $tr->th->label->addClass('is-primary-key');
+                }
 
 
                 $input = $this->getInputFromFieldDescriptor($fieldDescriptor);
@@ -108,10 +110,12 @@ class EntityEditor extends Component
         $this->dom->append($form);
         return $this;
 
+    }
 
 
-
-
+    public function getLabelFromFieldDescriptor(FieldDescriptor $fieldDescriptor)
+    {
+        return $fieldDescriptor->getLabel();
     }
 
     public function getInputFromFieldDescriptor(FieldDescriptor $descriptor)
