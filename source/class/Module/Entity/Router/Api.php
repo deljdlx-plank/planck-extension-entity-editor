@@ -5,6 +5,7 @@ namespace Planck\Extension\EntityEditor\Module\Entity\Router;
 
 
 
+use Planck\Exception;
 use Planck\Extension\EntityEditor\ImageEntityManager;
 use Planck\Extension\ViewComponent\DataLayer;
 use Planck\Model\Segment;
@@ -27,18 +28,28 @@ class Api extends Router
 
 
         $this->delete('delete', '`/entity-editor/api/save`', function () {
-            $data = $this->data();
-            if(!empty($data['entity'])) {
-                $entityData = $data['entity'];
 
-                if(!empty($entityData['_fingerprint'])) {
-                    $entity = $this->application->getModelInstanceByFingerPrint($entityData['_fingerprint']);
+
+
+            $data = $this->data();
+
+
+
+            if(!empty($data['entity'])) {
+
+
+
+                try {
+                    $entity = $this->application->getModelInstanceByDescriptor($data);
                     $entity->delete();
                     $dataLayer = new DataLayer();
                     echo json_encode(
                         $dataLayer->serializeValue($entity)
                     );
-
+                    return;
+                }
+                catch(Exception $exception) {
+                    echo 'false';
                     return;
                 }
             }
@@ -50,6 +61,7 @@ class Api extends Router
 
 
             $data = $this->post();
+
 
             if(!empty($data['entity'])) {
                 $entityData = $data['entity'];
