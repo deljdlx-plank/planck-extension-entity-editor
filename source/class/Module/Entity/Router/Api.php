@@ -6,9 +6,7 @@ namespace Planck\Extension\EntityEditor\Module\Entity\Router;
 
 
 use Planck\Exception;
-use Planck\Extension\EntityEditor\ImageEntityManager;
 use Planck\Extension\ViewComponent\DataLayer;
-use Planck\Model\Segment;
 use Planck\Routing\Router;
 
 class Api extends Router
@@ -35,12 +33,14 @@ class Api extends Router
 
 
 
+
             if(!empty($data['entity'])) {
 
+                $entityData = $data['entity'];
 
 
                 try {
-                    $entity = $this->application->getModelInstanceByDescriptor($data);
+                    $entity = $this->application->getModelInstanceByDescriptor($entityData);
                     $entity->delete();
                     $dataLayer = new DataLayer();
                     echo json_encode(
@@ -61,14 +61,19 @@ class Api extends Router
 
 
             $data = $this->post();
-
-
+            $entityData = $data['entity'];
 
 
             try {
 
-                $entity = $this->application->getModelInstanceByDescriptor($data, true);
-                $entity->setValues($data['entity']);
+                $entity = $this->application->getModelInstanceByDescriptor($entityData, true);
+                if(array_key_exists('values', $entityData)) {
+                    $entity->setValues($entityData['values']);
+                }
+                else {
+                    $entity->setValues($entityData);
+                }
+
                 $entity->store();
 
                 $dataLayer = new DataLayer();
@@ -78,12 +83,20 @@ class Api extends Router
                 return;
             }
             catch(Exception $exception) {
-                echo 'false';
+                echo json_encode(array(
+                    'status' => false,
+                    'message' => $exception->getMessage()
+                ));
                 return;
             }
 
             echo json_encode(false);
-        });
+        })->json();
+
+
+
+
+
 
         $this->post('set-property', '`/entity-editor/api/set-property`', function () {
 
@@ -114,6 +127,38 @@ class Api extends Router
 
         })->json();
 
+
+        $this->get('get-all', '`/entity-editor/api/get-all`', function($entityType = null) {
+
+
+            $entityData = $this->get('entity');
+            $entity = $this->application->getModelInstanceByDescriptor($entityData, true);
+
+
+            $parameters = $this->get('parameters');
+            $extraQuery = '';
+            if(!empty($parameters['sortBy'])) {
+                if($entity->fieldExists($parameters['sortBy'])) {
+                    $extraQuery = " ORDER BY ".$parameters['sortBy'];
+                }
+            }
+
+            $entitiesDataset = $entity->getRepository()->getAll($extraQuery);
+
+            $entities = $entitiesDataset->getAll();
+            $data = [];
+            foreach ($entities as $entity) {
+                $data[] = $entity->toExtendedArray();
+            }
+
+
+            echo json_encode(
+                $data
+            );
+
+
+
+        })->json();
 
 
 
