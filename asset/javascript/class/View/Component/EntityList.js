@@ -9,7 +9,7 @@ Planck.Extension.EntityEditor.View.Component.EntityList = function (container) {
 
     this.currentSegmentIndex = 0;
 
-    this.segmentSize = 2;
+    this.segmentSize = 16;
 
 
     this.toolbar = null;
