@@ -89,6 +89,8 @@ Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.getFloating
 Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.showEntitySelector = function()
 {
 
+    console.log('show');
+
     var componentName = 'Planck\\Extension\\EntityEditor\\View\\Component\\EntityList';
 
     var componentLoader = new Planck.Extension.ViewComponent.RemoteComponentLoader(
@@ -101,6 +103,8 @@ Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.showEntityS
 
     componentLoader.load(function(descriptor) {
 
+        console.log('load');
+
         var $floatingBox  = this.getFloatingBox(descriptor);
         $floatingBox.show();
 
@@ -111,8 +115,15 @@ Planck.Extension.EntityEditor.View.Component.EntityChooser.prototype.showEntityS
         );
 
         list.on('itemClick', function(descriptor) {
+
+
+
             this.$inputValue.val(descriptor.entity.getId());
             this.$labelElement.val(descriptor.entity.getLabel());
+
+            console.log(descriptor.entity.getLabel())
+
+
             $floatingBox.destroy();
         }.bind(this));
         list.load(0, function() {
