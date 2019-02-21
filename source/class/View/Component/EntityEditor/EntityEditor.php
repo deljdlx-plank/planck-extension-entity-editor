@@ -11,6 +11,7 @@ use Phi\HTML\Element\Td;
 use Phi\HTML\Element\Textarea;
 use Phi\HTML\Element\Th;
 use Phi\HTML\Element\Tr;
+use Planck\Helper\StringUtil;
 use Planck\Model\Entity;
 use Planck\Model\FieldDescriptor;
 use Planck\View\Component;
@@ -41,6 +42,7 @@ class EntityEditor extends Component
 
     public function loadEntityByAttributes($entityType, $attributes)
     {
+        $entityType = StringUtil::separatedToClassName($entityType, '.');
 
         $this->entity = $this->getApplication()->getModelEntity($entityType);
         $this->entity->loadBy($attributes);
@@ -138,26 +140,40 @@ class EntityEditor extends Component
 
         if($descriptor->getType() == FieldDescriptor::TYPE_TEXT) {
             $input = new Textarea();
+            $input->setValue($value);
+
         }
         else {
             $input = new Input();
+            $input->setValue($value);
         }
 
         if($descriptor->isInt()) {
             $input->setAttribute('type', 'number');
+            $input->setValue($value);
         }
         if($descriptor->isDate()) {
-            $input->setAttribute('type', 'date');
+            $input->setAttribute('type', 'datetime-local');
+
+            $time = strtotime($value);
+
+            //print_r(date('Y-m-d\TH:i', $time));
+            //exit();
+
+            $input->setValue(
+                date('Y-m-d\TH:i', $time)
+            );
         }
 
 
 
         if($descriptor->isPrimaryKey()) {
             $input->setAttribute('readonly', '');
+            $input->setValue($value);
         }
 
 
-        $input->setValue($value);
+
         $input->setName('entity['.$propertyName.']');
         $input->setAttribute('data-real-type', $descriptor->getType());
         $input->setAttribute('data-behaviour', 'interactive');
