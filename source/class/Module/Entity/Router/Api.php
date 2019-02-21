@@ -63,15 +63,11 @@ class Api extends Router
             $data = $this->post();
 
 
-            if(!empty($data['entity'])) {
-                $entityData = $data['entity'];
-            }
 
 
+            try {
 
-            if(!empty($entityData['_fingerprint'])) {
-
-                $entity = $this->application->getModelInstanceByFingerPrint($entityData['_fingerprint']);
+                $entity = $this->application->getModelInstanceByDescriptor($data, true);
                 $entity->setValues($data['entity']);
                 $entity->store();
 
@@ -81,6 +77,11 @@ class Api extends Router
                 );
                 return;
             }
+            catch(Exception $exception) {
+                echo 'false';
+                return;
+            }
+
             echo json_encode(false);
         });
 
