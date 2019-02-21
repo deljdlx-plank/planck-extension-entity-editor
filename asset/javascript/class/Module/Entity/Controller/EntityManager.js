@@ -33,49 +33,13 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.l
 {
 
 
-    var componentLoader = new Planck.Extension.ViewComponent.RemoteComponentLoader('Planck\\Extension\\EntityEditor\\View\\Component\\EntityEditor');
-    componentLoader.addMethodCall(
-        'loadEntityByAttributes',
-        [
-            descriptor.type,
-            descriptor.entity.getValues()
-        ]
-    );
+    var entityEditor = new Planck.Extension.EntityEditor.View.Component.EntityEditor(this.$entityEditorContainer);
+    entityEditor.setEntity(descriptor.entity);
+    entityEditor.load();
 
-    componentLoader.load(function(componentLoaderDescriptor) {
-
-        this.renderEntityEditor(
-            componentLoaderDescriptor.getHTML()
-        );
-    }.bind(this));
 };
 
 
 
-
-
-
-
-Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.renderEntityEditor = function(content)
-{
-
-
-    this.$entityEditorContainer.html(content);
-
-
-    this.$entityEditorContainer.find('.plk-entity-chooser').each(function(index, element) {
-
-
-
-        var entityName = $(element).attr('data-entity-type');
-
-        if(isset(Planck.Extension.EntityEditor.entityMapping[entityName])) {
-            var component = new Planck.Extension.EntityEditor.entityMapping[entityName](element);
-        }
-        else {
-            var component = new Planck.Extension.EntityEditor.View.Component.EntityChooser(element);
-        }
-    });
-};
 
 
