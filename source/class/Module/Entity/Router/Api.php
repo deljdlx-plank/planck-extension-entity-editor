@@ -42,6 +42,7 @@ class Api extends Router
                 try {
                     $entity = $this->application->getModelInstanceByDescriptor($entityData);
                     $entity->delete();
+
                     $dataLayer = new DataLayer();
                     echo json_encode(
                         $dataLayer->serializeValue($entity)
