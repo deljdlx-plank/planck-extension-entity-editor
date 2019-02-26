@@ -18,14 +18,17 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.i
 {
 
     this.entityList = new Planck.Extension.EntityEditor.View.Component.EntityList(this.$entityListContainer);
+
     this.entityList.on('itemClick', function(entityDescriptor) {
         this.loadEditorByEntityDescriptor(entityDescriptor);
+
+        this.renderEntityEditor();
 
     }.bind(this));
 
 
     this.entityList.load();
-    this.renderEntityEditor();
+
 
 };
 
@@ -33,9 +36,9 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.l
 {
 
 
-    var entityEditor = new Planck.Extension.EntityEditor.View.Component.EntityEditor(this.$entityEditorContainer);
-    entityEditor.setEntity(descriptor.entity);
-    entityEditor.load();
+    this.entityEditor = new Planck.Extension.EntityEditor.View.Component.EntityEditor(this.$entityEditorContainer);
+    this.entityEditor.setEntity(descriptor.entity);
+    this.entityEditor.load();
 
 };
 
