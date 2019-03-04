@@ -22,7 +22,7 @@ Planck.Extension.EntityEditor.Module.Entity.Controller.EntityManager.prototype.i
     this.entityList.on('itemClick', function(entityDescriptor) {
         this.loadEditorByEntityDescriptor(entityDescriptor);
 
-        this.renderEntityEditor();
+        //this.renderEntityEditor();
 
     }.bind(this));
 
