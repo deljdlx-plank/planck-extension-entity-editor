@@ -25,7 +25,7 @@ class Api extends Router
         $self = $this;
 
 
-        $this->delete('delete', '`/entity-editor/api/save`', function () {
+        $this->delete('delete', '`/entity-editor/api/delete`', function () {
 
 
 
@@ -97,6 +97,24 @@ class Api extends Router
 
 
 
+        $this->get('list-entities', '`/entity-editor/api/list-entities`', function () {
+
+
+            $entities = [];
+            foreach ($this->getApplication()->getExtensions() as $extension) {
+                $entities = array_merge(
+                    $entities,
+                    $extension->getEntities()
+                );
+            }
+
+            echo json_encode($entities);
+
+
+        })->json()
+        ->setBuilder('/entity-editor/api/list-entities');
+        ;
+
 
 
         $this->post('set-property', '`/entity-editor/api/set-property`', function () {
@@ -152,14 +170,14 @@ class Api extends Router
                 $data[] = $entity->toExtendedArray();
             }
 
-
             echo json_encode(
                 $data
             );
-
-
-
-        })->json();
+        })->json()
+        ->setBuilder(function(string $entityName) {
+            return '/entity-editor/api/get-all&entity='.$entityName;
+        })
+        ;
 
 
 
@@ -169,6 +187,15 @@ class Api extends Router
                 $entityType = $this->get('entityType');
             }
 
+            /*
+            $test= new \Planck\Extension\Content\Model\Entity\Article;
+            echo '<pre id="' . __FILE__ . '-' . __LINE__ . '"
+            style="border: solid 1px rgb(255,0,0); background-color:rgb(255,255,255)">';
+            echo '<div style="background-color:rgba(100,100,100,1); color: rgba(255,255,255,1)">' . __FILE__ . '@' . __LINE__ . '</div>';
+            print_r($entityType);
+            echo '</pre>';
+die('EXIT '.__FILE__.'@'.__LINE__);
+            */
 
             if(!class_exists($entityType)) {
                 echo 'false';
